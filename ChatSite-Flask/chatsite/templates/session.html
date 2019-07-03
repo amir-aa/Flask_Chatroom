@@ -1,0 +1,98 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/style.css') }}">
+    	<style>
+			@import url(http://fonts.googleapis.com/css?family=Raleway:400,700);
+			body {
+				background: #7f9b4e url(css/bg2.jpg) no-repeat center top;
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				background-size: cover;
+			}
+			.container > header h1,
+			.container > header h2 {
+				color: #fff;
+				text-shadow: 0 1px 1px rgba(0,0,0,0.7);
+			}
+            .scroll {
+   width: 200px;
+   height: 400px;
+    background: transparent;
+   overflow: scroll;
+   overflow-anchor: auto;
+
+}
+.scroll::-webkit-scrollbar {
+    width: 12px;
+}
+
+.scroll::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+		</style>
+    <title>Amir-CHAT</title>
+  </head>
+  <body>
+<div>
+{% for item in lst %}
+   <h2> {{ item }}</h2>
+    {% endfor %}
+</div>
+
+   <center><h3 style='color: #ccc;alignment: center;font-size: 30px;'>Welcome to chatroom</h3></center>
+    <div  class="form-4 message_holder scroll" align="center" style="overflow-x: hidden;overflow-y:scroll;width:90%"></div>
+
+    <form class="form-4" action="" method="POST">
+      <input type="text" class="username" placeholder="User Name" value={{args}}  readonly />
+      <input type="text" class="message" placeholder="Messages" width="400px"/>
+ <input type="hidden" class="hid" value={{gen}} />
+
+      <input type="submit"/>
+    </form>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+   <div class="shadow">
+     <div>
+    <script type="text/javascript">
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      socket.on( 'connect', function() {
+        socket.emit( 'my event', {
+          data: 'User Connected'
+        } )
+        var form = $( 'form' ).on( 'submit', function( e ) {
+          e.preventDefault()
+          let user_name = $( 'input.username' ).val()
+          let user_input = $( 'input.message' ).val()
+          let user_gender = $( 'input.hid' ).val()
+          socket.emit( 'my event', {
+            user_name : user_name,
+            message : user_input,
+            gender : user_gender
+          } )
+          $( 'input.message' ).val( '' ).focus()
+        } )
+      } )
+      socket.on( 'my response', function( msg ) {
+        console.log( msg )
+        if( typeof msg.user_name !== 'undefined' ) {
+          $( 'h3' ).remove()
+          $( 'div.message_holder' ).append( '<div  align="center"  style="padding-bottom:20px;margin: 20px 20px 20px 20px;bottom: 20px;width: 80%;border-width: thick;border-radius: 3px/6px; box-shadow: 1px 1px 2px #fff inset,-1px -1px 2px #fff inset; "><div  style="margin-left: 20px; width: 50%"> <img src='+msg.gender+'><b style="color: #000;font-size: larger">'+msg.user_name+'</b>  : '+msg.message+'</div></div>' )
+       $('div.message_holder').scrollTop($('div.message_holder')[0].scrollHeight)
+        }
+      })
+    </script></div></div>
+
+# the last line of Jquery We should scroll down to the last Post
+
+
+  </body>
+  </html>
